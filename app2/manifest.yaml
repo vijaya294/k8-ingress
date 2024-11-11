@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app1
+  name: app2
   labels: # these are replicaset labels
-    name: app1
+    name: app2
     tier: frontend
 spec:
   # modify replicas according to your case
@@ -11,27 +11,27 @@ spec:
   selector:
     # these are used to select the pod to create replicas
     matchLabels:
-      name: app1
+      name: app2
       tier: frontend
   # this is pod definition
   template:
     metadata:
       # these labels belongs to pod
       labels:
-        name: app1
+        name: app2
         tier: frontend
     spec:
       containers:
-      - name: app1
-        image: daws76s.icu/app1:v1
+      - name: app2
+        image: vijaya294/app2:v1
 ---
 kind: Service
 apiVersion: v1
 metadata:
-  name: app1
+  name: app2
 spec:
   selector:
-    name: app1
+    name: app2
     tier: frontend
   ports:
   - name: nginx-svc-port
@@ -42,9 +42,9 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-    name: echoserver
+    name: app2
     annotations:
-      kubernetes.io/ingress.class: alb
+      #kubernetes.io/ingress.class: alb
       alb.ingress.kubernetes.io/scheme: internet-facing
       alb.ingress.kubernetes.io/target-type: ip
       alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:315069654700:certificate/eefec79d-8012-4e7e-a530-baf154b833f2
@@ -52,14 +52,15 @@ metadata:
       alb.ingress.kubernetes.io/tags: Environment=dev,Team=test
       alb.ingress.kubernetes.io/group.name: expense
 spec:
+    ingressClassName: alb
     rules:
-    - host: "app1.daws76s.icu"
+    - host: "app2.daws76s.icu"
       http:
         paths:
         - pathType: Prefix
           path: "/"
           backend:
             service:
-              name: app1
+              name: app2
               port:
                 number: 80
